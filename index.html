@@ -7,7 +7,16 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Трекер чтения">
 <meta name="theme-color" content="#4CAF50">
+
+<!-- Иконки для iOS - ЭТО КРИТИЧЕСКИ ВАЖНО -->
 <link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+
+<!-- Стандартная иконка для PWA -->
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
 <link rel="manifest" href="manifest.json">
 
 <title>Трекер чтения</title>
@@ -58,11 +67,35 @@ button:active {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.book img {
-    width: 80px;
-    height: 120px;
-    object-fit: cover;
+/* ИСПРАВЛЕННЫЕ СТИЛИ ДЛЯ ИЗОБРАЖЕНИЙ */
+.book-image {
+    flex-shrink: 0; /* Чтобы изображение не сжималось */
+    width: 100px; /* Фиксированная ширина */
+}
+
+.book-image img {
+    width: 100px;
+    height: 150px; /* Фиксированная высота 3:2 пропорция */
+    object-fit: cover; /* Обрезает изображение, сохраняя пропорции */
     border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Плейсхолдер для книг без изображения */
+.book-image .no-image {
+    width: 100px;
+    height: 150px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+}
+
+.book-content {
+    flex: 1;
 }
 
 .progress {
@@ -120,10 +153,16 @@ input, select {
         flex-direction: column;
     }
     
-    .book img {
+    .book-image {
         width: 100%;
-        height: auto;
-        max-height: 200px;
+        text-align: center;
+    }
+    
+    .book-image img,
+    .book-image .no-image {
+        width: 120px;
+        height: 180px;
+        margin: 0 auto;
     }
 }
 
@@ -189,9 +228,8 @@ function save() {
     localStorage.setItem('books', JSON.stringify(books));
 }
 
-// Исправленная функция даты - сохраняем ISO строку
 function getCurrentDate() {
-    return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    return new Date().toISOString().split('T')[0];
 }
 
 function formatDate(dateStr) {
@@ -289,7 +327,6 @@ function editBook(id) {
     document.getElementById('saveBtn').innerHTML = "💾 Сохранить";
     document.getElementById('formTitle').innerText = "✏️ Редактирование";
     
-    // Скроллим к форме
     document.querySelector('.form-group').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -366,13 +403,19 @@ function render() {
         const percent = ((book.readPages / book.totalPages) * 100).toFixed(1);
         const remaining = book.totalPages - book.readPages;
         const daysToComplete = Math.ceil(remaining / book.pagesPerDay);
-        const totalDays = Math.ceil(book.totalPages / book.pagesPerDay);
         const status = book.readPages >= book.totalPages ? "✅ Прочитано" : "📖 Читаю";
+
+        // Генерируем HTML для изображения или плейсхолдера
+        const imageHtml = book.image 
+            ? `<img src="${book.image}" alt="${escapeHtml(book.title)}">` 
+            : `<div class="no-image">📚</div>`;
 
         container.innerHTML += `
         <div class="book">
-            ${book.image ? `<img src="${book.image}" alt="${book.title}">` : '<div style="width:80px; height:120px; background:#eee; border-radius:8px; display:flex; align-items:center; justify-content:center;">📚</div>'}
-            <div style="flex:1">
+            <div class="book-image">
+                ${imageHtml}
+            </div>
+            <div class="book-content">
                 <strong>${escapeHtml(book.title)}</strong><br>
                 <small>${escapeHtml(book.author)}</small><br>
                 <small>📅 ${formatDate(book.date)}</small><br>
@@ -403,7 +446,6 @@ function render() {
     });
 }
 
-// Защита от XSS
 function escapeHtml(str) {
     if (!str) return '';
     return str
