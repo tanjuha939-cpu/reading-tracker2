@@ -8,223 +8,353 @@
 <meta name="apple-mobile-web-app-title" content="Трекер чтения">
 <meta name="theme-color" content="#4CAF50">
 
-<!-- Иконки для iOS - ЭТО КРИТИЧЕСКИ ВАЖНО -->
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
 <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
-
-<!-- Стандартная иконка для PWA -->
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
 <link rel="manifest" href="manifest.json">
 
 <title>Трекер чтения</title>
 
 <style>
 * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    max-width: 900px;
-    margin: auto;
+    background: #f5f5f5;
+    padding: 16px;
+    padding-bottom: 32px;
+}
+
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+h2 {
+    font-size: 28px;
+    margin-bottom: 16px;
+    color: #1a1a1a;
+}
+
+.stats {
+    background: white;
+    padding: 14px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.stat-item {
+    background: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.form-card {
+    background: white;
+    border-radius: 20px;
     padding: 20px;
-    background: #f9f9f9;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.form-card h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
     color: #333;
 }
 
 input, select, button {
-    margin: 5px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    background: white;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #4CAF50;
 }
 
 button {
     background: #4CAF50;
     color: white;
     border: none;
+    font-weight: 600;
     cursor: pointer;
     transition: opacity 0.2s;
+    margin-bottom: 0;
 }
 
 button:active {
     opacity: 0.7;
 }
 
-.book {
-    background: white;
-    border: 1px solid #e0e0e0;
-    padding: 15px;
-    margin-top: 15px;
-    border-radius: 12px;
+.controls {
     display: flex;
-    gap: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    gap: 12px;
+    margin-bottom: 20px;
+    background: white;
+    padding: 12px;
+    border-radius: 16px;
 }
 
-/* ИСПРАВЛЕННЫЕ СТИЛИ ДЛЯ ИЗОБРАЖЕНИЙ */
-.book-image {
-    flex-shrink: 0; /* Чтобы изображение не сжималось */
-    width: 100px; /* Фиксированная ширина */
+.controls label {
+    font-size: 13px;
+    color: #666;
 }
 
-.book-image img {
-    width: 100px;
-    height: 150px; /* Фиксированная высота 3:2 пропорция */
-    object-fit: cover; /* Обрезает изображение, сохраняя пропорции */
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.controls select {
+    width: auto;
+    margin-bottom: 0;
+    padding: 8px 12px;
+    background: #f5f5f5;
 }
 
-/* Плейсхолдер для книг без изображения */
-.book-image .no-image {
-    width: 100px;
-    height: 150px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
+.book-card {
+    background: white;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    padding: 12px;
+    display: flex;
+    gap: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.book-cover {
+    flex-shrink: 0;
+    width: 80px;
+    height: 120px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #e8e8e8;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.book-cover .no-cover {
+    font-size: 36px;
+}
+
+.book-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.book-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.3;
+}
+
+.book-author {
+    font-size: 13px;
+    color: #777;
+}
+
+.book-meta {
+    font-size: 12px;
+    color: #999;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.book-status {
+    display: inline-block;
+    padding: 2px 10px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.book-status.done {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.progress-section {
+    margin: 8px 0 4px;
+}
+
+.progress-bar-bg {
+    height: 6px;
+    background: #e8e8e8;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 6px 0;
+}
+
+.progress-bar-fill {
+    height: 6px;
+    background: #4CAF50;
+    border-radius: 10px;
+    width: 0%;
+}
+
+.progress-stats {
+    font-size: 12px;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Стили для поля ввода страниц */
+.pages-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.pages-input label {
+    font-size: 11px;
+    color: #888;
+}
+
+.pages-input input {
+    width: 70px;
+    padding: 6px 8px;
+    margin: 0;
+    text-align: center;
+    font-size: 13px;
+    border-radius: 8px;
+}
+
+.book-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.book-actions button {
+    flex: 1;
+    padding: 8px;
+    font-size: 12px;
+    border-radius: 10px;
+    background: #f0f0f0;
+    color: #333;
+    font-weight: normal;
+}
+
+.book-actions button:first-child {
+    background: #4CAF50;
     color: white;
 }
 
-.book-content {
-    flex: 1;
+.book-actions button:last-child {
+    background: #ffebee;
+    color: #c62828;
 }
 
-.progress {
-    height: 10px;
-    background: #eee;
-    border-radius: 5px;
-    overflow: hidden;
-    margin: 10px 0;
-}
-
-.progress-bar {
-    height: 10px;
-    background: #4CAF50;
-    border-radius: 5px;
-    transition: width 0.3s ease;
-}
-
-.stats {
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
     background: white;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    font-size: 14px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.form-group {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-}
-
-input, select {
-    width: calc(100% - 12px);
-    margin: 6px;
-}
-
-.controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 15px 0;
-}
-
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-    
-    .book {
-        flex-direction: column;
-    }
-    
-    .book-image {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .book-image img,
-    .book-image .no-image {
-        width: 120px;
-        height: 180px;
-        margin: 0 auto;
-    }
+    border-radius: 24px;
+    color: #aaa;
 }
 
 @media (prefers-color-scheme: dark) {
     body {
-        background: #1a1a1a;
-        color: #fff;
+        background: #121212;
     }
-    
-    .book, .stats, .form-group {
+    h2, .form-card h3 {
+        color: #eee;
+    }
+    .form-card, .book-card, .stats, .controls {
+        background: #1e1e1e;
+    }
+    input, select {
         background: #2a2a2a;
         border-color: #3a3a3a;
+        color: white;
     }
-    
-    input, select {
-        background: #3a3a3a;
-        color: #fff;
-        border-color: #4a4a4a;
+    .book-title {
+        color: #eee;
+    }
+    .progress-stats, .book-author, .book-meta {
+        color: #aaa;
+    }
+    .book-actions button {
+        background: #2a2a2a;
+        color: #ddd;
+    }
+    .stat-item {
+        background: #2a2a2a;
+        color: #ccc;
     }
 }
 </style>
 </head>
 
 <body>
+<div class="container">
+    <h2>📚 Трекер чтения</h2>
 
-<h2>📚 Трекер чтения</h2>
+    <div class="stats" id="stats"></div>
 
-<div class="stats" id="stats"></div>
+    <div class="form-card">
+        <h3 id="formTitle">➕ Добавить книгу</h3>
+        <input type="text" id="title" placeholder="Название книги">
+        <input type="text" id="author" placeholder="Автор">
+        <input type="number" id="totalPages" placeholder="Всего страниц">
+        <input type="number" id="pagesPerDay" placeholder="Страниц в день">
+        <input type="file" id="image" accept="image/*">
+        <button id="saveBtn" onclick="saveBook()">Добавить</button>
+    </div>
 
-<div class="form-group">
-    <h3 id="formTitle">Добавить книгу</h3>
-    <input id="title" placeholder="Название книги" autocomplete="off">
-    <input id="author" placeholder="Автор" autocomplete="off">
-    <input id="totalPages" type="number" placeholder="Всего страниц">
-    <input id="pagesPerDay" type="number" placeholder="Страниц в день">
-    <input id="image" type="file" accept="image/*">
-    <button onclick="saveBook()" id="saveBtn">➕ Добавить</button>
+    <div class="controls">
+        <select id="sort" onchange="render()">
+            <option value="date">📅 По дате</option>
+            <option value="progress">📈 По прогрессу</option>
+            <option value="title">🔤 По названию</option>
+        </select>
+        <select id="filter" onchange="render()">
+            <option value="all">Все книги</option>
+            <option value="reading">📖 Читаю</option>
+            <option value="done">✅ Прочитано</option>
+        </select>
+    </div>
+
+    <div id="books"></div>
 </div>
-
-<div class="controls">
-    <label>📊 Сортировка:</label>
-    <select id="sort" onchange="render()">
-        <option value="date">По дате</option>
-        <option value="progress">По прогрессу</option>
-        <option value="title">По названию</option>
-    </select>
-
-    <label>🔍 Фильтр:</label>
-    <select id="filter" onchange="render()">
-        <option value="all">Все</option>
-        <option value="reading">Читаю</option>
-        <option value="done">Прочитано</option>
-    </select>
-</div>
-
-<div id="books"></div>
 
 <script>
 let books = JSON.parse(localStorage.getItem('books')) || [];
 let editId = null;
 
-function save() {
+function saveToLocal() {
     localStorage.setItem('books', JSON.stringify(books));
 }
 
@@ -233,13 +363,10 @@ function getCurrentDate() {
 }
 
 function formatDate(dateStr) {
-    if (!dateStr) return 'Нет даты';
+    if (!dateStr) return '';
     let d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
-    let day = String(d.getDate()).padStart(2, '0');
-    let month = String(d.getMonth() + 1).padStart(2, '0');
-    let year = d.getFullYear();
-    return `${day}.${month}.${year}`;
+    return `${d.getDate().toString().padStart(2,'0')}.${(d.getMonth()+1).toString().padStart(2,'0')}.${d.getFullYear()}`;
 }
 
 function saveBook() {
@@ -250,12 +377,11 @@ function saveBook() {
     const file = document.getElementById('image').files[0];
 
     if (!title || !author || !totalPages || !pagesPerDay) {
-        alert("❌ Заполните все поля");
+        alert("Заполните все поля");
         return;
     }
-
     if (totalPages <= 0 || pagesPerDay <= 0) {
-        alert("❌ Количество страниц должно быть больше 0");
+        alert("Страниц должно быть больше 0");
         return;
     }
 
@@ -283,22 +409,20 @@ function saveBook() {
         }
 
         editId = null;
-        document.getElementById('saveBtn').innerHTML = "➕ Добавить";
-        document.getElementById('formTitle').innerText = "Добавить книгу";
-
+        document.getElementById('saveBtn').innerText = "Добавить";
+        document.getElementById('formTitle').innerHTML = "➕ Добавить книгу";
         clearForm();
-        save();
+        saveToLocal();
         render();
     };
 
     if (file) {
         if (file.size > 5 * 1024 * 1024) {
-            alert("❌ Изображение не должно превышать 5MB");
+            alert("Изображение не больше 5MB");
             return;
         }
         const reader = new FileReader();
         reader.onload = e => handleSave(e.target.result);
-        reader.onerror = () => alert("❌ Ошибка загрузки изображения");
         reader.readAsDataURL(file);
     } else {
         handleSave(null);
@@ -323,37 +447,32 @@ function editBook(id) {
     document.getElementById('pagesPerDay').value = book.pagesPerDay;
 
     editId = id;
-
-    document.getElementById('saveBtn').innerHTML = "💾 Сохранить";
-    document.getElementById('formTitle').innerText = "✏️ Редактирование";
-    
-    document.querySelector('.form-group').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('saveBtn').innerText = "Сохранить";
+    document.getElementById('formTitle').innerHTML = "✏️ Редактировать";
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function updatePages(id, value) {
     const book = books.find(b => b.id === id);
     if (!book) return;
-    
-    let newValue = parseInt(value);
-    if (isNaN(newValue)) newValue = 0;
-    book.readPages = Math.min(Math.max(0, newValue), book.totalPages);
-    save();
+    let newVal = parseInt(value);
+    if (isNaN(newVal)) newVal = 0;
+    book.readPages = Math.min(Math.max(0, newVal), book.totalPages);
+    saveToLocal();
     render();
 }
 
 function deleteBook(id) {
-    if (confirm("🗑️ Удалить книгу?")) {
+    if (confirm("Удалить книгу?")) {
         books = books.filter(b => b.id !== id);
-        save();
+        saveToLocal();
         render();
     }
 }
 
 function render() {
-    let container = document.getElementById('books');
-    let stats = document.getElementById('stats');
-
-    container.innerHTML = '';
+    const container = document.getElementById('books');
+    const statsDiv = document.getElementById('stats');
 
     let list = [...books];
 
@@ -362,109 +481,115 @@ function render() {
     if (filter === 'done') list = list.filter(b => b.readPages >= b.totalPages);
 
     const sort = document.getElementById('sort').value;
-
     if (sort === 'progress') {
         list.sort((a,b) => (b.readPages/b.totalPages) - (a.readPages/a.totalPages));
-    }
-    if (sort === 'title') {
+    } else if (sort === 'title') {
         list.sort((a,b) => a.title.localeCompare(b.title));
-    }
-    if (sort === 'date') {
+    } else if (sort === 'date') {
         list.sort((a,b) => new Date(b.date) - new Date(a.date));
     }
 
     let totalBooks = books.length;
-    let totalPages = 0;
-    let totalRead = 0;
-    let completedBooks = 0;
-
+    let totalPages = 0, totalRead = 0, completed = 0;
     books.forEach(b => {
         totalPages += b.totalPages;
         totalRead += b.readPages;
-        if (b.readPages >= b.totalPages) completedBooks++;
+        if (b.readPages >= b.totalPages) completed++;
     });
+    const totalPercent = totalPages ? ((totalRead / totalPages) * 100).toFixed(1) : 0;
 
-    let totalPercent = totalPages ? ((totalRead / totalPages) * 100).toFixed(1) : 0;
-
-    stats.innerHTML = `
-        <span>📊 Книг: ${totalBooks}</span>
-        <span>✅ Прочитано: ${completedBooks}</span>
-        <span>📚 Страниц: ${totalPages}</span>
-        <span>📖 Прочитано: ${totalRead}</span>
-        <span>📈 Прогресс: ${totalPercent}%</span>
+    statsDiv.innerHTML = `
+        <div class="stat-item">📚 Книг: ${totalBooks}</div>
+        <div class="stat-item">✅ Прочитано: ${completed}</div>
+        <div class="stat-item">📖 Страниц: ${totalPages}</div>
+        <div class="stat-item">📊 Прочитано: ${totalRead}</div>
+        <div class="stat-item">📈 Прогресс: ${totalPercent}%</div>
     `;
 
     if (list.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 40px;">📭 Нет книг. Добавьте первую!</div>';
+        container.innerHTML = `<div class="empty-state">📭 Нет книг. Добавьте первую книгу!</div>`;
         return;
     }
 
-    list.forEach(book => {
+    container.innerHTML = list.map(book => {
         const percent = ((book.readPages / book.totalPages) * 100).toFixed(1);
         const remaining = book.totalPages - book.readPages;
-        const daysToComplete = Math.ceil(remaining / book.pagesPerDay);
-        const status = book.readPages >= book.totalPages ? "✅ Прочитано" : "📖 Читаю";
+        const daysLeft = Math.ceil(remaining / book.pagesPerDay);
+        const status = book.readPages >= book.totalPages ? "Прочитано" : "Читаю";
+        const statusClass = book.readPages >= book.totalPages ? "done" : "";
 
-        // Генерируем HTML для изображения или плейсхолдера
-        const imageHtml = book.image 
-            ? `<img src="${book.image}" alt="${escapeHtml(book.title)}">` 
-            : `<div class="no-image">📚</div>`;
-
-        container.innerHTML += `
-        <div class="book">
-            <div class="book-image">
-                ${imageHtml}
+        return `
+        <div class="book-card">
+            <div class="book-cover">
+                ${book.image ? `<img src="${book.image}" alt="${escapeHtml(book.title)}">` : `<div class="no-cover">📘</div>`}
             </div>
-            <div class="book-content">
-                <strong>${escapeHtml(book.title)}</strong><br>
-                <small>${escapeHtml(book.author)}</small><br>
-                <small>📅 ${formatDate(book.date)}</small><br>
-                <small>🏷 ${status}</small><br><br>
-
-                <label>Прочитано страниц:</label>
-                <input type="number" value="${book.readPages}" 
-                    onchange="updatePages(${book.id}, this.value)" 
-                    style="width: 100px;"
-                    min="0" max="${book.totalPages}">
-                
-                <div class="progress">
-                    <div class="progress-bar" style="width:${percent}%"></div>
+            <div class="book-info">
+                <div class="book-title">${escapeHtml(book.title)}</div>
+                <div class="book-author">${escapeHtml(book.author)}</div>
+                <div class="book-meta">
+                    <span>📅 ${formatDate(book.date)}</span>
+                    <span class="book-status ${statusClass}">${status}</span>
                 </div>
                 
-                <div style="font-size: 14px; margin-top: 8px;">
-                    📊 ${percent}% • Осталось: ${remaining} стр. • 
-                    ${book.readPages >= book.totalPages ? '🎉 Книга дочитана!' : `⏱️ ~${daysToComplete} дн.`}
+                <div class="progress-section">
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span>📖 ${book.readPages} / ${book.totalPages} стр.</span>
+                        <span>${percent}%</span>
+                    </div>
                 </div>
 
-                <div style="margin-top: 12px;">
-                    <button onclick="editBook(${book.id})">✏️ Редактировать</button>
-                    <button onclick="deleteBook(${book.id})" style="background:#f44336;">🗑️ Удалить</button>
+                <!-- ПОЛЕ ДЛЯ ВВОДА ПРОЧИТАННЫХ СТРАНИЦ -->
+                <div class="pages-input">
+                    <label>📝 Прочитано:</label>
+                    <input type="number" 
+                           class="progress-input" 
+                           data-id="${book.id}" 
+                           value="${book.readPages}"
+                           min="0" 
+                           max="${book.totalPages}"
+                           step="1">
+                    <span style="font-size: 11px; color: #888;">из ${book.totalPages}</span>
+                </div>
+
+                <div class="progress-stats" style="font-size: 11px; margin-top: 4px;">
+                    <span>⏱️ Осталось: ${remaining} стр.</span>
+                    <span>📅 ~${daysLeft} дн.</span>
+                </div>
+
+                <div class="book-actions">
+                    <button onclick="editBook(${book.id})">✏️ Править</button>
+                    <button onclick="deleteBook(${book.id})">🗑️ Удалить</button>
                 </div>
             </div>
         </div>
         `;
+    }).join('');
+
+    // Навешиваем обработчики на поля ввода
+    document.querySelectorAll('.progress-input').forEach(input => {
+        const id = parseInt(input.dataset.id);
+        input.addEventListener('change', (e) => updatePages(id, e.target.value));
     });
 }
 
 function escapeHtml(str) {
     if (!str) return '';
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
 }
 
-// Регистрация Service Worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('SW registered:', reg))
-        .catch(err => console.log('SW error:', err));
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
 }
 
 render();
 </script>
-
 </body>
 </html>
