@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script>
+// Определяем базовый путь для GitHub Pages
+const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+window.basePath = basePath;
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8,10 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Трекер чтения">
 <meta name="theme-color" content="#4CAF50">
 
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-<link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
-<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<link rel="apple-touch-icon" href="icons">
 <link rel="manifest" href="manifest.json">
 
 <title>Трекер чтения</title>
@@ -61,64 +63,12 @@ h2 {
     border-radius: 20px;
 }
 
-/* СВЕРТЫВАЕМАЯ ФОРМА */
-.form-wrapper {
-    margin-bottom: 24px;
-}
-
-.form-toggle-btn {
-    width: 100%;
-    background: #4CAF50;
-    color: white;
-    padding: 14px;
-    border-radius: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.form-toggle-btn span:first-child {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.form-toggle-btn .arrow {
-    font-size: 20px;
-    transition: transform 0.2s;
-}
-
-.form-toggle-btn.open .arrow {
-    transform: rotate(180deg);
-}
-
 .form-card {
     background: white;
     border-radius: 20px;
     padding: 20px;
-    margin-top: 8px;
+    margin-bottom: 24px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    display: none;
-}
-
-.form-card.open {
-    display: block;
-    animation: slideDown 0.2s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .form-card h3 {
@@ -281,6 +231,7 @@ button:active {
     align-items: center;
 }
 
+/* Стили для поля ввода страниц */
 .pages-input {
     display: flex;
     align-items: center;
@@ -365,9 +316,6 @@ button:active {
         background: #2a2a2a;
         color: #ccc;
     }
-    .form-toggle-btn {
-        background: #2e7d32;
-    }
 }
 </style>
 </head>
@@ -378,21 +326,14 @@ button:active {
 
     <div class="stats" id="stats"></div>
 
-    <!-- СВЕРТЫВАЕМАЯ ФОРМА -->
-    <div class="form-wrapper">
-        <div class="form-toggle-btn" id="toggleFormBtn">
-            <span>➕ Добавить книгу</span>
-            <span class="arrow">▼</span>
-        </div>
-        <div class="form-card" id="formCard">
-            <h3 id="formTitle">Новая книга</h3>
-            <input type="text" id="title" placeholder="Название книги">
-            <input type="text" id="author" placeholder="Автор">
-            <input type="number" id="totalPages" placeholder="Всего страниц">
-            <input type="number" id="pagesPerDay" placeholder="Страниц в день">
-            <input type="file" id="image" accept="image/*">
-            <button id="saveBtn" onclick="saveBook()">Добавить</button>
-        </div>
+    <div class="form-card">
+        <h3 id="formTitle">➕ Добавить книгу</h3>
+        <input type="text" id="title" placeholder="Название книги">
+        <input type="text" id="author" placeholder="Автор">
+        <input type="number" id="totalPages" placeholder="Всего страниц">
+        <input type="number" id="pagesPerDay" placeholder="Страниц в день">
+        <input type="file" id="image" accept="image/*">
+        <button id="saveBtn" onclick="saveBook()">Добавить</button>
     </div>
 
     <div class="controls">
@@ -414,25 +355,6 @@ button:active {
 <script>
 let books = JSON.parse(localStorage.getItem('books')) || [];
 let editId = null;
-
-// Управление свертыванием формы
-const toggleBtn = document.getElementById('toggleFormBtn');
-const formCard = document.getElementById('formCard');
-
-function toggleForm(open) {
-    if (open === undefined) {
-        formCard.classList.toggle('open');
-        toggleBtn.classList.toggle('open');
-    } else if (open) {
-        formCard.classList.add('open');
-        toggleBtn.classList.add('open');
-    } else {
-        formCard.classList.remove('open');
-        toggleBtn.classList.remove('open');
-    }
-}
-
-toggleBtn.addEventListener('click', () => toggleForm());
 
 function saveToLocal() {
     localStorage.setItem('books', JSON.stringify(books));
@@ -490,11 +412,10 @@ function saveBook() {
 
         editId = null;
         document.getElementById('saveBtn').innerText = "Добавить";
-        document.getElementById('formTitle').innerHTML = "Новая книга";
+        document.getElementById('formTitle').innerHTML = "➕ Добавить книгу";
         clearForm();
         saveToLocal();
         render();
-        toggleForm(false); // Сворачиваем форму после добавления
     };
 
     if (file) {
@@ -529,9 +450,7 @@ function editBook(id) {
 
     editId = id;
     document.getElementById('saveBtn').innerText = "Сохранить";
-    document.getElementById('formTitle').innerHTML = "✏️ Редактирование";
-    
-    toggleForm(true); // Разворачиваем форму при редактировании
+    document.getElementById('formTitle').innerHTML = "✏️ Редактировать";
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -597,9 +516,7 @@ function render() {
     container.innerHTML = list.map(book => {
         const percent = ((book.readPages / book.totalPages) * 100).toFixed(1);
         const remaining = book.totalPages - book.readPages;
-        const daysTotal = Math.ceil(book.totalPages / book.pagesPerDay);      // ВСЕГО дней нужно
-        const daysLeft = Math.ceil(remaining / book.pagesPerDay);             // ОСТАЛОСЬ дней
-        const daysPassed = daysTotal - daysLeft;                              // ПРОШЛО дней
+        const daysLeft = Math.ceil(remaining / book.pagesPerDay);
         const status = book.readPages >= book.totalPages ? "Прочитано" : "Читаю";
         const statusClass = book.readPages >= book.totalPages ? "done" : "";
 
@@ -626,6 +543,7 @@ function render() {
                     </div>
                 </div>
 
+                <!-- ПОЛЕ ДЛЯ ВВОДА ПРОЧИТАННЫХ СТРАНИЦ -->
                 <div class="pages-input">
                     <label>📝 Прочитано:</label>
                     <input type="number" 
@@ -638,12 +556,10 @@ function render() {
                     <span style="font-size: 11px; color: #888;">из ${book.totalPages}</span>
                 </div>
 
-                <!-- ПОЛНЫЙ ПРОГРЕСС ПО ДНЯМ -->
                 <div class="progress-stats" style="font-size: 11px; margin-top: 4px;">
                     <span>⏱️ Осталось: ${remaining} стр.</span>
-                    <span>📅 ${daysPassed} из ${daysTotal} дн.</span>
+                    <span>📅 ~${daysLeft} дн.</span>
                 </div>
-                ${book.readPages < book.totalPages ? `<div style="font-size: 10px; color: #888; margin-top: 2px;">≈ осталось ${daysLeft} дн.</div>` : '<div style="font-size: 10px; color: #4CAF50; margin-top: 2px;">🎉 Книга дочитана!</div>'}
 
                 <div class="book-actions">
                     <button onclick="editBook(${book.id})">✏️ Править</button>
@@ -654,6 +570,7 @@ function render() {
         `;
     }).join('');
 
+    // Навешиваем обработчики на поля ввода
     document.querySelectorAll('.progress-input').forEach(input => {
         const id = parseInt(input.dataset.id);
         input.addEventListener('change', (e) => updatePages(id, e.target.value));
