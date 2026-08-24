@@ -3,7 +3,7 @@
 
   const STORAGE_KEY = 'bookPredictorStateV1';
   const UI_KEY = 'bookPredictorUiV2';
-  const APP_VERSION = '1.1';
+  const APP_VERSION = '1.2';
   const TODAY = localDateString(new Date());
   const POSITIVE_REASONS = ['Необычная идея','Сильная история','Интрига','Динамика','Неожиданные повороты','Персонажи','Эмоции','Атмосфера','Легко читается','Сильный финал','Практичность','Полезные мысли'];
   const NEGATIVE_REASONS = ['Затянуто','Предсказуемо','Идея не новая','Мало событий','Нелогичный сюжет','Раздражающие герои','Слабый финал','Тяжёлый язык','Много воды','Повторы','Неправдоподобно','Не вызвало эмоций'];
@@ -283,12 +283,28 @@
     openModal(`
       <div class="detail-head"><div class="detail-cover">${escapeHtml(shortTitle(b.title))}</div><div><h2>${escapeHtml(b.title)}</h2><p class="muted" style="margin:4px 0">${escapeHtml(b.author||'')}</p><div class="meta"><span>${escapeHtml(b.category||'')}</span><span class="tag">${b.format==='audio'?'Аудио':'Текст'}</span></div></div></div>
       <section class="score-panel card"><div class="muted small">Твоя оценка</div><div class="big-score">${formatScore(b.myRating||0)} / 5,0</div><p>LiveLib: <strong>${b.livelibRating?formatScore(b.livelibRating):'—'}</strong> &nbsp; Яндекс Книги: <strong>${b.yandexRating?formatScore(b.yandexRating):'—'}</strong></p><p class="muted small">Прочитана: ${b.readDate?formatDate(b.readDate):'дата неизвестна'}</p></section>
-      <section class="card" style="padding:15px;margin-bottom:12px"><h3>Общее впечатление</h3><p>${escapeHtml(b.impressions?.overall||'Ещё не заполнено')}</p>${b.impressions?.comment?`<p class="muted">${escapeHtml(b.impressions.comment)}</p>`:''}</section>
-      ${b.format==='audio'?`<section class="card" style="padding:15px;margin-bottom:12px"><h3>Чтец</h3><p>Оценка: <strong>${b.narratorRating?formatScore(b.narratorRating):'не указана'}</strong></p></section>`:''}
+      ${renderImpressionsDetail(b)}
+      ${b.format==='audio'?`<section class="card narrator-card"><h3>Чтец</h3><p>Оценка: <strong>${b.narratorRating?formatScore(b.narratorRating):'не указана'}</strong></p>${b.narratorComment?`<p class="muted">${escapeHtml(b.narratorComment)}</p>`:''}</section>`:''}
       ${b.poorMemory?'<div class="warning">Отмечено: содержание плохо помнится. Эта книга слабее влияет на прогноз.</div>':''}
       <div class="button-row" style="margin-top:14px"><button class="primary" data-modal-action="impressions">${b.impressions?'Изменить впечатления':'Заполнить впечатления'}</button><button class="secondary" data-modal-action="edit">Редактировать</button></div>
       <div class="button-row" style="margin-top:8px"><button class="secondary" data-modal-action="remove">Удалить / скрыть</button></div>`, b.title);
     bindModalAction('impressions',()=>openImpressions(b,false)); bindModalAction('edit',()=>openAddBook('read',b)); bindModalAction('remove',()=>openRemoveBook(b));
+  }
+
+  function renderImpressionsDetail(b){
+    const imp=b.impressions;
+    if(!imp) return `<section class="card impressions-card"><h3>Мои впечатления</h3><p class="muted">Ещё не заполнено</p></section>`;
+    const positive=(imp.positive||[]).filter(Boolean);
+    const negative=(imp.negative||[]).filter(Boolean);
+    const characteristics=Object.entries(imp.characteristics||{}).filter(([,value])=>value);
+    return `<section class="card impressions-card">
+      <div class="impressions-title"><div><span class="muted small">Общее впечатление</span><h3>${escapeHtml(imp.overall||'Не указано')}</h3></div></div>
+      ${positive.length?`<div class="impression-block"><div class="impression-label">Что понравилось</div><div class="impression-tags">${positive.map(x=>`<span class="impression-tag good">${escapeHtml(x)}</span>`).join('')}</div></div>`:''}
+      ${negative.length?`<div class="impression-block"><div class="impression-label">Что не понравилось</div><div class="impression-tags">${negative.map(x=>`<span class="impression-tag risk">${escapeHtml(x)}</span>`).join('')}</div></div>`:''}
+      ${characteristics.length?`<div class="impression-block"><div class="impression-label">Характеристики</div><div class="characteristic-list">${characteristics.map(([name,value])=>`<div class="characteristic-row"><span>${escapeHtml(name)}</span><strong>${escapeHtml(value)}</strong></div>`).join('')}</div></div>`:''}
+      ${imp.expectation?`<div class="impression-line"><span>Ожидания</span><strong>${escapeHtml(imp.expectation)}</strong></div>`:''}
+      ${imp.comment?`<div class="impression-block"><div class="impression-label">Комментарий</div><p class="impression-comment">${escapeHtml(imp.comment)}</p></div>`:''}
+    </section>`;
   }
 
   function openForecastFeedback(b){
