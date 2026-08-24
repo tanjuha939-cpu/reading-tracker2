@@ -1,4 +1,4 @@
-const CACHE = 'book-predictor-v1-2';
+const CACHE = 'book-predictor-v1-1';
 const CORE = [
   './', './index.html', './styles.css', './starter-data.js', './app.js',
   './manifest.webmanifest', './assets/icon-192.png', './assets/icon-512.png'
