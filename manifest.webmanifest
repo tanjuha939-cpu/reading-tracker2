@@ -1,0 +1,22 @@
+{
+  "name": "Мой книжный прогноз",
+  "short_name": "Книжный прогноз",
+  "description": "Персональный прогноз оценки книг на основе истории чтения",
+  "lang": "ru",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f2e8",
+  "theme_color": "#2f6b3b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {"src":"assets/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"assets/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ],
+  "share_target": {
+    "action": "./index.html",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {"title":"title","text":"text","url":"url"}
+  }
+}
